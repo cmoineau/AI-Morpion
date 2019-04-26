@@ -87,9 +87,9 @@ public class Application extends JFrame implements Observer {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		Joueur j1 = new JoueurHumain(0, "Bob");
+		Joueur j1 = new JoueurIAAleatoire(0, "Bob");
 		Joueur j2 = new JoueurIAAleatoire(1, "Alice");
-		Partie p = new Partie(7, j1, j2);
+		Partie p = new Partie(4, j1, j2);
 		new Application(p);
 		p.demarrer();
 	}
