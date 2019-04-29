@@ -1,4 +1,3 @@
-
 public abstract class Joueur {
 	private String nom;
 	private int id;

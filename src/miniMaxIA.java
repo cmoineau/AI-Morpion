@@ -1,22 +1,99 @@
 import java.util.List;
-import java.util.Random;
 
 public class miniMaxIA extends JoueurIA {
 
     public miniMaxIA(int id, String nom) {
         super(id, nom);
     }
+
+    /**
+     * Fonction To choose the action to choose
+     * @param state of the board
+     * @return The action which will lead to the best score
+     * @throws Exception
+     */
     @Override
-    public Action choisirAction(Etat etat) throws Exception {
-        Random aleatoire = new Random();
-        List<Action> actionsPossibles = etat.actionsPossibles();
-        int indiceAction = aleatoire.nextInt(actionsPossibles.size());
-        System.out.println(actionsPossibles.get(indiceAction));
-        return  actionsPossibles.get(indiceAction);
+    public Action choisirAction(Etat state) throws Exception {
+        List<Action> listAction= state.actionsPossibles();
+        Etat tmpState;
+        int tmpScore;
+        int bestScore=-1;
+        Action bestAction = listAction.get(0); // I initialize using the first action available
+
+        // A loop to find the best action
+        for (Action tmpAction : listAction) {
+            tmpState = state.clone();
+            tmpState.jouer(tmpAction);
+            tmpScore = miniMax(tmpState);
+            if(tmpScore>bestScore) {
+                bestScore=tmpScore;
+                bestAction = tmpAction;
+            }
+        }
+        return bestAction;
     }
+
+    /**
+     * Function to have the best score on a branch
+     * @param n A state of the game
+     * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
+     */
+    private int miniMax(Etat n){
+        int alpha = -1; int beta = 1;
+        Etat tmpState;
+        List<Action> listAction= n.actionsPossibles();
+        int tmpScore;
+
+        if(isTerminal(n)) {
+            return utilite(n);
+        }else{
+            if(n.getJoueurCourant() == this.getID()){ // Max is playing !
+                // Trying every action possible
+
+                for (Action tmpAction : listAction) {
+                    tmpState = n.clone();
+                    tmpState.jouer(tmpAction);
+                    tmpScore = miniMax(tmpState);
+                    // Update alpha
+                    if(tmpScore > alpha) alpha =tmpScore;
+                }
+                return alpha;
+            }else{  // Min is playing !
+                for (Action tmpAction : listAction) {
+                    tmpState = n.clone();
+                    tmpState.jouer(tmpAction);
+                    tmpScore = miniMax(tmpState);
+                    // Update beta
+                    if(tmpScore < beta) beta = tmpScore;
+                }
+                return beta;
+            }
+        }
+    }
+
+    /**
+     * Say if the state correspond to the end of a game
+     * @param n State
+     * @return if it's the end of the game
+     */
+    private boolean isTerminal (Etat n){ //TODO : A coder !
+        return true;
+    }
+
+    /**
+     * Return the score of a leaf
+     * @param n Sate
+     * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
+     */
+    private int utilite (Etat n){ // TODO : A compléter, il faut s'assurer qu'un des joueurs n'a pas gagné si plateau complet
+        if(n.getPlateau().estRempli()) return 0;
+        if(n.getJoueurCourant() == this.getID()) return 1;
+        else return -1;
+    }
+
 
     @Override
     public void proposerAction(Action action) {
-
+        // Void used by the UI
     }
 }
