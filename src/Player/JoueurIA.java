@@ -1,4 +1,6 @@
+package Player;
 
+import Game.Action;
 
 public abstract class JoueurIA extends Joueur {
 
@@ -22,7 +24,7 @@ public abstract class JoueurIA extends Joueur {
 		
 	       if (action != null) {
 	            System.out.println("##############################");
-	            System.out.println("Action memorisee :" + actionMemorisee.toString());
+	            System.out.println("Game.Action memorisee :" + actionMemorisee.toString());
 	            System.out.println("##############################");
 	        }
 	        else {

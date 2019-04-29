@@ -1,3 +1,9 @@
+package Game;
+
+import Game.Action;
+import Game.Etat;
+import Player.JoueurIA;
+
 import java.util.List;
 
 public class miniMaxIA extends JoueurIA {

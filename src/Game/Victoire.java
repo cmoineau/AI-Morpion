@@ -1,3 +1,6 @@
+package Game;
+
+import Player.Joueur;
 
 public class Victoire implements Situation {
 	private Joueur vainqueur;

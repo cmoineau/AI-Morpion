@@ -1,3 +1,8 @@
+package Player;
+
+import Game.Action;
+import Game.Etat;
+
 public abstract class Joueur {
 	private String nom;
 	private int id;

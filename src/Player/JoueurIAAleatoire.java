@@ -1,7 +1,13 @@
+package Player;
+
+import Game.Action;
+import Game.Etat;
+import Player.JoueurIA;
+
 import java.util.List;
 import java.util.Random;
 
-public class JoueurIAAleatoire extends JoueurIA{
+public class JoueurIAAleatoire extends JoueurIA {
 
 
 	public JoueurIAAleatoire(int id, String nom) {
@@ -20,7 +26,6 @@ public class JoueurIAAleatoire extends JoueurIA{
 	@Override
 	public void proposerAction(Action action) {
 		// Rien (appel par l'interface graphique)
-		
 	}
 
 

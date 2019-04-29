@@ -1,3 +1,10 @@
+package Game;
+
+import Game.EnCours;
+import Game.Etat;
+import Game.Situation;
+import Player.Joueur;
+
 import java.util.Observable;
 
 public class Partie extends Observable {

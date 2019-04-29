@@ -1,3 +1,8 @@
+package Player;
+
+import Game.Action;
+import Game.Etat;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 

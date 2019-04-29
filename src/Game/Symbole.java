@@ -1,3 +1,4 @@
+package Game;
 
 public enum Symbole {
 	X("X"),

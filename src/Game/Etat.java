@@ -1,3 +1,7 @@
+package Game;
+
+import Player.Joueur;
+
 import java.util.List;
 
 public class Etat {
