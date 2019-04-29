@@ -3,6 +3,7 @@ package Game;
 import Game.Action;
 import Game.Etat;
 import Player.JoueurIA;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -83,6 +84,11 @@ public class miniMaxIA extends JoueurIA {
      * @return if it's the end of the game
      */
     private boolean isTerminal (Etat n){ //TODO : A coder !
+        if (n.situationCourante() instanceof EnCours){
+            System.out.println("Non Terminal");
+            return false;
+        }
+        System.out.println("Terminal");
         return true;
     }
 
@@ -92,9 +98,19 @@ public class miniMaxIA extends JoueurIA {
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
     private int utilite (Etat n){ // TODO : A compléter, il faut s'assurer qu'un des joueurs n'a pas gagné si plateau complet
+        /*
         if(n.getPlateau().estRempli()) return 0;
         if(n.getJoueurCourant() == this.getID()) return 1;
-        else return -1;
+        else return -1;*/
+        /*
+            La procédure situationCourante vérifie bien les conditions de victoire avant de renvoyer l'égalite ou encours
+         */
+        if  (n.situationCourante() instanceof Egalite){
+            return 0;
+        } else if (n.getJoueurCourant()==this.getID()) {
+            return 1;
+        }
+        return -1;
     }
 
 

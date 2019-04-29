@@ -27,7 +27,7 @@ public class Plateau {
 		try {
 			Plateau clone = new Plateau(taille);
 			for (int x = 0; x < taille; x++) {
-				for (int y = 0; x < taille; y++) {
+				for (int y = 0; y < taille; y++) {
 					clone.cases[x][y] = this.cases[x][y];
 				}
 			}
