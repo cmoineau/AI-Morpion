@@ -2,32 +2,38 @@ package Player;
 
 import Game.Action;
 import Game.Etat;
-import Player.JoueurIA;
 
 import java.util.List;
 import java.util.Random;
 
-public class JoueurIAAleatoire extends JoueurIA {
 
+/**
+ * Implémentation d'un joueur artificiel qui joue de manière aléatoire
+ */
+public class JoueurIAAleatoire extends JoueurIA{
 
-	public JoueurIAAleatoire(int id, String nom) {
-		super(id, nom);
+	/**
+	 * Constructeur
+	 *
+	 * @param nom nom du joueur
+	 */
+	public JoueurIAAleatoire(String nom) {
+		super(nom);
 	}
 
+	/**
+	 * Choisit une action au hasard
+	 *
+	 * @param etat État actuel de la partie
+	 * @return une action
+	 */
 	@Override
 	public Action choisirAction(Etat etat) {
 		Random aleatoire = new Random();
 		List<Action> actionsPossibles = etat.actionsPossibles();
 		int indiceAction = aleatoire.nextInt(actionsPossibles.size());
-		System.out.println(actionsPossibles.get(indiceAction));
 		return  actionsPossibles.get(indiceAction);
 	}
-
-	@Override
-	public void proposerAction(Action action) {
-		// Rien (appel par l'interface graphique)
-	}
-
 
 
 }
