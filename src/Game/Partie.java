@@ -1,8 +1,5 @@
 package Game;
 
-import Game.EnCours;
-import Game.Etat;
-import Game.Situation;
 import Player.Joueur;
 import Player.JoueurIA;
 import Player.ThreadCalculIA;
@@ -207,8 +204,10 @@ public class Partie extends Observable {
 
 		// Terminer les threads de calcul éventuellement toujours en cours
 		for (Thread t : Thread.getAllStackTraces().keySet()) {
+			//System.out.println("Thread "+t+" "+t.getName());
 			for (StackTraceElement ste : t.getStackTrace()) {
-				if (ste.getClassName().equals("ThreadCalculIA")) {
+				//System.out.println("ste = "+ste.getClassName());
+				if (ste.getClassName().equals("Player.ThreadCalculIA")) {
 					t.stop();
 				}
 			}

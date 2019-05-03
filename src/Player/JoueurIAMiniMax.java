@@ -7,9 +7,9 @@ import Game.Etat;
 
 import java.util.List;
 
-public class miniMaxIA extends JoueurIA {
+public class JoueurIAMiniMax extends JoueurIA {
 
-    public miniMaxIA(String nom) {
+    public JoueurIAMiniMax(String nom) {
         super(nom);
     }
 
@@ -33,7 +33,9 @@ public class miniMaxIA extends JoueurIA {
         for (Action tmpAction : listAction) {
             System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
             tmpState = state.clone();
-            tmpState.jouer(tmpAction);  // TODO : A changer car joue pour de vrai
+            tmpState.jouer(tmpAction);
+            tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1); // we switch player manually
+            System.out.println("test");
             tmpScore = miniMax(tmpState);
             if(tmpScore>bestScore) {
                 bestScore=tmpScore;
@@ -51,7 +53,7 @@ public class miniMaxIA extends JoueurIA {
      */
     private int miniMax(Etat n){
         //System.out.println("Utilisation de miniMax !");
-        int alpha = -1; int beta = 1;
+        int max = -1; int min = 1;
         Etat tmpState;
         List<Action> listAction= n.actionsPossibles();
         int tmpScore;
@@ -63,22 +65,26 @@ public class miniMaxIA extends JoueurIA {
                 // Trying every action possible
 
                 for (Action tmpAction : listAction) {
+                    //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
                     tmpState = n.clone();
-                    tmpState.jouer(tmpAction);// TODO : A changer car joue pour de vrai
+                    tmpState.jouer(tmpAction);
+                    tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1); // we switch player manually
                     tmpScore = miniMax(tmpState);
-                    // Update alpha
-                    if(tmpScore > alpha) alpha =tmpScore;
+                    // Update max
+                    if(tmpScore > max) max =tmpScore;
                 }
-                return alpha;
+                return max;
             }else{  // Min is playing !
                 for (Action tmpAction : listAction) {
+                    //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
                     tmpState = n.clone();
-                    tmpState.jouer(tmpAction);// TODO : A changer car joue pour de vrai
+                    tmpState.jouer(tmpAction);
+                    tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1); // we switch player manually
                     tmpScore = miniMax(tmpState);
-                    // Update beta
-                    if(tmpScore < beta) beta = tmpScore;
+                    // Update min
+                    if(tmpScore < min) min = tmpScore;
                 }
-                return beta;
+                return min;
             }
         }
     }
@@ -97,7 +103,7 @@ public class miniMaxIA extends JoueurIA {
      * @param n Sate
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
-    private int utilite (Etat n){ // TODO : A compléter, il faut s'assurer qu'un des joueurs n'a pas gagné si plateau complet
+    private int utilite (Etat n){
         if  (n.situationCourante() instanceof Egalite){
             return 0;
         } else if (n.getIdJoueurCourant()==this.getID()) {
