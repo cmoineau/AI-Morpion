@@ -1,3 +1,4 @@
+package Exception;
 
 public class DejaOccupeException extends Exception {
 
