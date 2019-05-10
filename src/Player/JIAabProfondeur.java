@@ -7,9 +7,9 @@ import Game.Etat;
 
 import java.util.List;
 
-public class JoueurIAAlphaBeta extends JoueurIA {
+public class JIAabProfondeur extends JoueurIA {
 
-    public JoueurIAAlphaBeta(String nom) {
+    public JIAabProfondeur(String nom) {
         super(nom);
     }
 
