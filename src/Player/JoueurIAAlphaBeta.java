@@ -1,9 +1,6 @@
 package Player;
 
-import Game.Action;
-import Game.Egalite;
-import Game.EnCours;
-import Game.Etat;
+import Game.*;
 
 import java.util.List;
 
@@ -36,7 +33,7 @@ public class JoueurIAAlphaBeta extends JoueurIA {
             tmpState.jouer(tmpAction);
             tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1); // we switch player manually
             //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
-            tmpScore = alphaBeta(tmpState, alpha, beta);
+            tmpScore = alphaBeta(tmpState, alpha, beta, 1);
             //System.out.println("Score associé à cette action : "+tmpScore);
             if(tmpScore>alpha) {
                 alpha=tmpScore;
@@ -44,8 +41,44 @@ public class JoueurIAAlphaBeta extends JoueurIA {
                 System.out.println("Oh ! un meilleur coup a été trouvé x : " + tmpAction.getX() + " y  : " + tmpAction.getY() + " score associé : " + tmpScore);
             }
         }
-        System.out.println("L'ia à pu terminer son calcul ! " );
+        System.out.println("L'ia a pu terminer son calcul ! " );
         return this.getActionMemorisee();
+    }
+
+    private int heuristique(Etat n) {
+        int LigPoss = 0;
+/*
+        for(int i = 0; i < n.getPlateau().getTaille(); i++){
+            for(int j = 0; j < n.getPlateau().getTaille(); j++){
+                Symbole s = n.getPlateau().getCase(i, j);
+                if(i != 0 && n.getPlateau().getCase(i-1, j) == s){
+                    LigPoss++;
+                }
+                if(i != 0 && n.getPlateau().getCase(i-1, j-1) == s && j!=0){
+                    LigPoss++;
+                }
+                if(j != 0 && n.getPlateau().getCase(i, j-1) == s){
+                    LigPoss++;
+                }
+                if(j != 0 && n.getPlateau().getCase(i+1, j-1) == s && i != n.getPlateau().getTaille()-1){
+                    LigPoss++;
+                }
+                if(i != n.getPlateau().getTaille()-1 && n.getPlateau().getCase(i+1, j) == s){
+                    LigPoss++;
+                }
+                if(i != n.getPlateau().getTaille()-1 && n.getPlateau().getCase(i+1, j+1) == s && j!= n.getPlateau().getTaille()-1){
+                    LigPoss++;
+                }
+                if(j != n.getPlateau().getTaille()-1 && n.getPlateau().getCase(i, j+1) == s){
+                    LigPoss++;
+                }
+                if(j != n.getPlateau().getTaille()-1 && i!=0 && n.getPlateau().getCase(i-1, j+1) == s){
+                    LigPoss++;
+                }
+            }
+        }*/
+
+        return LigPoss;
     }
 
     /**
@@ -53,50 +86,53 @@ public class JoueurIAAlphaBeta extends JoueurIA {
      * @param n A state of the game
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
-    private int alphaBeta(Etat n, int alpha, int beta){
-        //System.out.println("Utilisation de alphaBeta !");
+    private int alphaBeta(Etat n, int alpha, int beta, int rg){
+            //System.out.println("Utilisation de alphaBeta !");
+        if(rg>5) {
+            return heuristique(n);
+        } else {
+            Etat tmpState;
+            List<Action> listAction= n.actionsPossibles();
+            int tmpScore;
 
-        Etat tmpState;
-        List<Action> listAction= n.actionsPossibles();
-        int tmpScore;
+            if(isTerminal(n)) {
+                return utilite(n);
+            }else {
+                if (n.getIdJoueurCourant() == this.getID()) { // Max is playing !
+                    //System.out.println("Max is playing");
+                    // Trying every action possible
+                    for (Action tmpAction : listAction) {
+                        if (alpha > beta) return alpha;
 
-        if(isTerminal(n)) {
-            return utilite(n);
-        }else{
-            if(n.getIdJoueurCourant() == this.getID()){ // Max is playing !
-                //System.out.println("Max is playing");
-                // Trying every action possible
-                for (Action tmpAction : listAction) {
-                    if(alpha > beta) return alpha;
-
-                    //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
-                    tmpState = n.clone();
-                    tmpState.jouer(tmpAction);
-                    tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1); // we switch player manually
-                    //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
-                    tmpScore = alphaBeta(tmpState, alpha, beta);
-                    // Update alpha
-                    if(tmpScore > alpha) alpha =tmpScore;
+                        //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
+                        tmpState = n.clone();
+                        tmpState.jouer(tmpAction);
+                        tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
+                        //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
+                        tmpScore = alphaBeta(tmpState, alpha, beta, rg+1);
+                        // Update alpha
+                        if (tmpScore > alpha) alpha = tmpScore;
 
 
+                    }
+                    return alpha;
+                } else {  // Min is playing !
+                    //System.out.println("Min is playing");
+                    for (Action tmpAction : listAction) {
+                        if (alpha > beta) return beta;
+                        //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
+                        tmpState = n.clone();
+                        tmpState.jouer(tmpAction);
+                        tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
+                        //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
+                        tmpScore = alphaBeta(tmpState, alpha, beta, rg+1);
+                        // Update beta
+                        if (tmpScore < beta) beta = tmpScore;
+
+
+                    }
+                    return beta;
                 }
-                return alpha;
-            }else{  // Min is playing !
-                //System.out.println("Min is playing");
-                for (Action tmpAction : listAction) {
-                    if(alpha > beta) return beta;
-                    //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
-                    tmpState = n.clone();
-                    tmpState.jouer(tmpAction);
-                    tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1); // we switch player manually
-                    //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
-                    tmpScore = alphaBeta(tmpState, alpha, beta);
-                    // Update beta
-                    if(tmpScore < beta) beta = tmpScore;
-
-
-                }
-                return beta;
             }
         }
     }
@@ -122,12 +158,12 @@ public class JoueurIAAlphaBeta extends JoueurIA {
             return 0;
         } else if (n.getIdJoueurCourant()!=this.getID()) {
             System.out.println("j"+this.getID() + " gagne :)");
-            System.out.println ("###\n" + n.getPlateau().toString());
+            //System.out.println ("###\n" + n.getPlateau().toString());
 
             return 1;
         }else{
             System.out.println("j"+n.getIdJoueurCourant()+" gagne :(");
-            System.out.println ("###\n" + n.getPlateau().toString());
+            //System.out.println ("###\n" + n.getPlateau().toString());
             return -1;
         }
     }
