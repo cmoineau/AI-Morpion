@@ -10,11 +10,11 @@ import java.util.List;
 
 public class JIAabLargeur extends JoueurIA {
 
-    private static LinkedList<Node> noeudATraiter = new LinkedList<Node>();
-
+    // Structure de file pour faire une exploration en profondeur
+    private static LinkedList<Node> open = new LinkedList<Node>();
+    private static LinkedList<Node> close = new LinkedList<Node>();
     /**
      * Constructeur
-     *
      * @param nom nom du joueur
      */
     public JIAabLargeur(String nom) {
@@ -30,49 +30,47 @@ public class JIAabLargeur extends JoueurIA {
      */
     @Override
     public Action choisirAction(Etat state) throws Exception {
-        Etat etatCourant;
         int alpha = -1, beta = 1;
         int tmpScore;
         Etat tmpState;
         Node tmpNode;
 
         System.out.println("Le joueur IA joue ...");
+        // Initialisation de la file de noeud !
         List<Action> listAction= state.actionsPossibles();
         for (Action tmpA: listAction ) {
             tmpState=state.clone();
             tmpState.jouer(tmpA);
             tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1);
-            noeudATraiter.add(new Node(tmpA,tmpState));
+            open.add(new Node(tmpA,tmpState));
         }
 
-        while (! noeudATraiter.isEmpty()){
-            tmpNode = noeudATraiter.remove();
-            tmpScore = alphaBeta(tmpNode.getEtat(), alpha, beta);
+        while (! open.isEmpty()){ // Condition peut être un peu forte ... A changer pour tant qu'on detecte pas un coup gagnant ?
+            tmpNode = open.remove();
+            tmpScore = evalEtat(tmpNode.getEtat());
             if(tmpNode.getEtat().getIdJoueurCourant() == this.getID() && tmpScore>alpha) {
                 alpha=tmpScore;
-                this.setActionMemorisee(tmpNode.getFirstAction());
+                System.out.println("On mémorise une nouvelle meilleur action : " + tmpNode.getEtat().getPlateau() );
+                this.setActionMemorisee(tmpNode.getAction());
             }if(tmpNode.getEtat().getIdJoueurCourant() != this.getID() && tmpScore<beta) {
                 beta=tmpScore;
-                this.setActionMemorisee(tmpNode.getFirstAction());
+                System.out.println("On mémorise une nouvelle meilleur action : " + tmpNode.getEtat().getPlateau() );
+
+                this.setActionMemorisee(tmpNode.getAction());
             }
-            listAction= tmpNode.getEtat().actionsPossibles();
-            for (Action tmpA: listAction ) {
-                tmpState=state.clone();
-                tmpState.jouer(tmpA);
-                tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1);
-                noeudATraiter.add(new Node(tmpA,tmpState));
-            }
+            // On place le noeud dans les états
+            close.add(tmpNode);
+            enregistrerActionFils(tmpNode);
         }
         System.out.println("L'algo a eu le temps de terminer");
         return this.getActionMemorisee();
     }
 
     /**
-     * Function to have the best score on a branch
      * @param n A state of the game
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
-    private int alphaBeta(Etat n, int alpha, int beta){
+    private int evalEtat(Etat n){
         if(isTerminal(n)) {
             return utilite(n);
         }else{
@@ -116,23 +114,17 @@ public class JIAabLargeur extends JoueurIA {
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
     private int heuristique (Etat n){
-        if(isTerminal(n)){
-            if  (n.situationCourante() instanceof Egalite){
-                System.out.println("Detection d'une égalité !");
-                return 0;
-            } else if (n.getIdJoueurCourant()!=this.getID()) {
-                System.out.println("j"+this.getID() + " gagne :)");
-                System.out.println ("###\n" + n.getPlateau().toString());
-                return 1;
-            }else{
-                System.out.println("j"+n.getIdJoueurCourant()+" gagne :(");
-                System.out.println ("###\n" + n.getPlateau().toString());
-                return -1;
-            }
-        }
-        else {
-            System.out.println("Apparemment pas de vainqueur");
             return 0;
+    }
+
+    private void enregistrerActionFils (Node node){
+        List<Action> listAction= node.getEtat().actionsPossibles();
+        Etat tmpState;
+        for (Action tmpA: listAction ) {
+            tmpState=node.getEtat().clone(); // On penses bien a jouer les actions par rapport à l'état du fils !
+            tmpState.jouer(tmpA);
+            tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1);
+            open.add(new Node(tmpA,tmpState));
         }
     }
 }

@@ -3,6 +3,7 @@ package Player;
 import Game.*;
 
 import java.util.List;
+import java.util.Random;
 
 public class JIAabProfondeur extends JoueurIA {
 
@@ -24,11 +25,12 @@ public class JIAabProfondeur extends JoueurIA {
         Etat tmpState;
         int tmpScore;
         int alpha = -1; int beta = 1;
+
         System.out.println("A la recherche du meilleur coup");
         // A loop to find the best action
         for (Action tmpAction : listAction) {
             if(alpha > beta) return this.getActionMemorisee();
-            System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
+            //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
             tmpState = state.clone();
             tmpState.jouer(tmpAction);
             tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1); // we switch player manually
@@ -38,7 +40,7 @@ public class JIAabProfondeur extends JoueurIA {
             if(tmpScore>alpha) {
                 alpha=tmpScore;
                 this.setActionMemorisee(tmpAction);
-                System.out.println("Oh ! un meilleur coup a été trouvé x : " + tmpAction.getX() + " y  : " + tmpAction.getY() + " score associé : " + tmpScore);
+                System.out.println("Oh ! un meilleur coup a été trouvé " + tmpAction + " score associé : " + tmpScore);
             }
         }
         System.out.println("L'ia a pu terminer son calcul ! " );
@@ -87,7 +89,7 @@ public class JIAabProfondeur extends JoueurIA {
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
     private int alphaBeta(Etat n, int alpha, int beta, int rg){
-            //System.out.println("Utilisation de alphaBeta !");
+        //System.out.println("Utilisation de alphaBeta !");
         if(rg>5) {
             return heuristique(n);
         } else {
@@ -154,15 +156,15 @@ public class JIAabProfondeur extends JoueurIA {
      */
     private int utilite (Etat n){
         if  (n.situationCourante() instanceof Egalite){
-            System.out.println("Detection d'une égalité !");
+            //System.out.println("Detection d'une égalité !");
             return 0;
         } else if (n.getIdJoueurCourant()!=this.getID()) {
-            System.out.println("j"+this.getID() + " gagne :)");
+            //System.out.println("j"+this.getID() + " gagne :)");
             //System.out.println ("###\n" + n.getPlateau().toString());
 
             return 1;
         }else{
-            System.out.println("j"+n.getIdJoueurCourant()+" gagne :(");
+            //System.out.println("j"+n.getIdJoueurCourant()+" gagne :(");
             //System.out.println ("###\n" + n.getPlateau().toString());
             return -1;
         }

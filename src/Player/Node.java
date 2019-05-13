@@ -4,27 +4,27 @@ import Game.Action;
 import Game.Etat;
 
 public class Node {
-    private Action firstAction;
-    private Etat Etat;
+    private Action action;
+    private Etat etat;
 
-    public Node(Action firstAction, Game.Etat etat) {
-        this.firstAction = firstAction;
-        Etat = etat;
+    public Node(Action action, Etat etat) {
+        this.action = action;
+        this.etat = etat;
     }
 
-    public void setFirstAction(Action firstAction) {
-        this.firstAction = firstAction;
+    public void setAction(Action action) {
+        this.action = action;
     }
 
     public void setEtat(Etat etat) {
-        Etat = etat;
+        this.etat = etat;
     }
 
-    public Action getFirstAction() {
-        return firstAction;
+    public Action getAction() {
+        return this.action;
     }
 
     public Etat getEtat() {
-        return Etat;
+        return this.etat;
     }
 }
