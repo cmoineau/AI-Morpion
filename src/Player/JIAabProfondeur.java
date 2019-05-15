@@ -23,8 +23,8 @@ public class JIAabProfondeur extends JoueurIA {
         List<Action> listAction= state.actionsPossibles();
         System.out.println("Récupération de  : " + listAction.size() + " actions possible");
         Etat tmpState;
-        int tmpScore;
-        int alpha = -1; int beta = 1;
+        double tmpScore;
+        double alpha = -1, beta = 1;
 
         System.out.println("A la recherche du meilleur coup");
         // A loop to find the best action
@@ -35,7 +35,7 @@ public class JIAabProfondeur extends JoueurIA {
             tmpState.jouer(tmpAction);
             tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant()+1); // we switch player manually
             //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
-            tmpScore = alphaBeta(tmpState, alpha, beta, 1);
+            tmpScore = alphaBeta(tmpState, alpha, beta, 1, tmpAction);
             //System.out.println("Score associé à cette action : "+tmpScore);
             if(tmpScore>alpha) {
                 alpha=tmpScore;
@@ -47,40 +47,77 @@ public class JIAabProfondeur extends JoueurIA {
         return this.getActionMemorisee();
     }
 
-    private int heuristique(Etat n) {
-        int LigPoss = 0;
-/*
-        for(int i = 0; i < n.getPlateau().getTaille(); i++){
-            for(int j = 0; j < n.getPlateau().getTaille(); j++){
-                Symbole s = n.getPlateau().getCase(i, j);
-                if(i != 0 && n.getPlateau().getCase(i-1, j) == s){
-                    LigPoss++;
-                }
-                if(i != 0 && n.getPlateau().getCase(i-1, j-1) == s && j!=0){
-                    LigPoss++;
-                }
-                if(j != 0 && n.getPlateau().getCase(i, j-1) == s){
-                    LigPoss++;
-                }
-                if(j != 0 && n.getPlateau().getCase(i+1, j-1) == s && i != n.getPlateau().getTaille()-1){
-                    LigPoss++;
-                }
-                if(i != n.getPlateau().getTaille()-1 && n.getPlateau().getCase(i+1, j) == s){
-                    LigPoss++;
-                }
-                if(i != n.getPlateau().getTaille()-1 && n.getPlateau().getCase(i+1, j+1) == s && j!= n.getPlateau().getTaille()-1){
-                    LigPoss++;
-                }
-                if(j != n.getPlateau().getTaille()-1 && n.getPlateau().getCase(i, j+1) == s){
-                    LigPoss++;
-                }
-                if(j != n.getPlateau().getTaille()-1 && i!=0 && n.getPlateau().getCase(i-1, j+1) == s){
-                    LigPoss++;
-                }
-            }
-        }*/
+    private double heuristique(Etat n, Action tmp) {
+        int voisin = 0;
 
-        return LigPoss;
+        if(!loin(tmp)) {
+            int i = tmp.getX();
+            int j = tmp.getY();
+            Symbole s = n.getPlateau().getCase(i, j);
+            if (i != 0 && n.getPlateau().getCase(i - 1, j) == s) {
+                voisin++;
+            }
+            if (i != 0 && j != 0 && n.getPlateau().getCase(i - 1, j - 1) == s) {
+                voisin++;
+            }
+            if (j != 0 && n.getPlateau().getCase(i, j - 1) == s) {
+                voisin++;
+            }
+            if (j != 0 && i != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j - 1) == s) {
+                voisin++;
+            }
+            if (i != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j) == s) {
+                voisin++;
+            }
+            if (i != n.getPlateau().getTaille() - 1 && j != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j + 1) == s) {
+                voisin++;
+            }
+            if (j != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i, j + 1) == s) {
+                voisin++;
+            }
+            if (j != n.getPlateau().getTaille() - 1 && i != 0 && n.getPlateau().getCase(i - 1, j + 1) == s) {
+                voisin++;
+            }
+
+            /*
+            for (int i = 0; i < n.getPlateau().getTaille(); i++) {
+                for (int j = 0; j < n.getPlateau().getTaille(); j++) {
+                    Symbole s = n.getPlateau().getCase(i, j);
+                    if (i != 0 && n.getPlateau().getCase(i - 1, j) == s) {
+                        LigPoss++;
+                    }
+                    if (i != 0 && n.getPlateau().getCase(i - 1, j - 1) == s && j != 0) {
+                        LigPoss++;
+                    }
+                    if (j != 0 && n.getPlateau().getCase(i, j - 1) == s) {
+                        LigPoss++;
+                    }
+                    if (j != 0 && n.getPlateau().getCase(i + 1, j - 1) == s && i != n.getPlateau().getTaille() - 1) {
+                        LigPoss++;
+                    }
+                    if (i != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j) == s) {
+                        LigPoss++;
+                    }
+                    if (i != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j + 1) == s && j != n.getPlateau().getTaille() - 1) {
+                        LigPoss++;
+                    }
+                    if (j != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i, j + 1) == s) {
+                        LigPoss++;
+                    }
+                    if (j != n.getPlateau().getTaille() - 1 && i != 0 && n.getPlateau().getCase(i - 1, j + 1) == s) {
+                        LigPoss++;
+                    }
+                }
+            }*/
+        }
+        if(n.getIdJoueurCourant() != this.getID()) voisin = voisin *(-1);
+        System.out.println(voisin);
+        return voisin/8;
+    }
+
+    private boolean loin(Action tmp) {
+
+        return false;
     }
 
     /**
@@ -88,14 +125,14 @@ public class JIAabProfondeur extends JoueurIA {
      * @param n A state of the game
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
-    private int alphaBeta(Etat n, int alpha, int beta, int rg){
+    private double alphaBeta(Etat n, double alpha, double beta, int profondeur, Action tmp){
         //System.out.println("Utilisation de alphaBeta !");
-        if(rg>5) {
-            return heuristique(n);
+        if(profondeur>5) {
+            return heuristique(n, tmp);
         } else {
             Etat tmpState;
             List<Action> listAction= n.actionsPossibles();
-            int tmpScore;
+            double tmpScore;
 
             if(isTerminal(n)) {
                 return utilite(n);
@@ -111,7 +148,7 @@ public class JIAabProfondeur extends JoueurIA {
                         tmpState.jouer(tmpAction);
                         tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
                         //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
-                        tmpScore = alphaBeta(tmpState, alpha, beta, rg+1);
+                        tmpScore = alphaBeta(tmpState, alpha, beta, profondeur+1, tmpAction);
                         // Update alpha
                         if (tmpScore > alpha) alpha = tmpScore;
 
@@ -127,7 +164,7 @@ public class JIAabProfondeur extends JoueurIA {
                         tmpState.jouer(tmpAction);
                         tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
                         //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
-                        tmpScore = alphaBeta(tmpState, alpha, beta, rg+1);
+                        tmpScore = alphaBeta(tmpState, alpha, beta, profondeur+1, tmpAction);
                         // Update beta
                         if (tmpScore < beta) beta = tmpScore;
 
