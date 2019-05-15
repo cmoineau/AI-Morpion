@@ -140,7 +140,7 @@ public class Plateau {
 		return libres;
 	}
 
-	public List<Action> getCasesInteret() {//renvoie les cases libres au contact d'au moins une case jouée
+	public List<Action> getCasesInteret() {//renvoie les cases libres au contact d'au moins une case occupée
 		List<Action> interet = new LinkedList<Action>();
 		for (int x=0; x<taille; x++){
 			for (int y=0; y<taille;y++){
