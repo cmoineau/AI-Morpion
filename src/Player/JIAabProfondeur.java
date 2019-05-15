@@ -20,7 +20,7 @@ public class JIAabProfondeur extends JoueurIA {
     @Override
     public Action choisirAction(Etat state) throws Exception {
         System.out.println("Le joueur IA joue ...");
-        List<Action> listAction= state.actionsPossibles2();
+        List<Action> listAction= state.actionsPossibles();
         System.out.println("Récupération de  : " + listAction.size() + " actions possible");
         Etat tmpState;
         int tmpScore;
@@ -47,9 +47,9 @@ public class JIAabProfondeur extends JoueurIA {
         return this.getActionMemorisee();
     }
 
-    private int heuristique(Etat n) {//8 lignes possibles par points
+    private int heuristique(Etat n) {
         int LigPoss = 0;
-
+/*
         for(int i = 0; i < n.getPlateau().getTaille(); i++){
             for(int j = 0; j < n.getPlateau().getTaille(); j++){
                 Symbole s = n.getPlateau().getCase(i, j);
@@ -78,9 +78,9 @@ public class JIAabProfondeur extends JoueurIA {
                     LigPoss++;
                 }
             }
-        }
+        }*/
 
-        return LigPoss/8;
+        return LigPoss;
     }
 
     /**
@@ -94,7 +94,7 @@ public class JIAabProfondeur extends JoueurIA {
             return heuristique(n);
         } else {
             Etat tmpState;
-            List<Action> listAction= n.actionsPossibles2();
+            List<Action> listAction= n.actionsPossibles();
             int tmpScore;
 
             if(isTerminal(n)) {
