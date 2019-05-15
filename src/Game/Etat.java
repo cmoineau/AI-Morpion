@@ -98,6 +98,10 @@ public class Etat {
 		return plateau.getToutesCasesLibres();
 	}
 
+	public List<Action> actionsPossibles2() {//renvoie les cases libres au contact de cases deja jouées
+		return plateau.getCasesInteret();
+	}
+
 	/**
 	 * Détecte et retourne la situation actuelle associée à l'état courant (en cours, égalité ou victoire d'un joueur)
 	 *

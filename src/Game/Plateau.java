@@ -140,6 +140,32 @@ public class Plateau {
 		return libres;
 	}
 
+	public List<Action> getCasesInteret() {//renvoie les cases libres au contact d'au moins une case jouée
+		List<Action> interet = new LinkedList<Action>();
+		for (int x=0; x<taille; x++){
+			for (int y=0; y<taille;y++){
+				if (estLibre(x,y)){
+					boolean b = false;
+					Action[] inPlateau = new Action[4];
+					int cpt = 0;
+					if (x-1>=0){inPlateau[cpt]=new Action(x-1,y); cpt++;}
+					if (x+1<taille) {inPlateau[cpt]=new Action(x+1,y); cpt++;}
+					if (y-1>=0){inPlateau[cpt]=new Action(x,y-1); cpt++;}
+					if (y+1<taille) {inPlateau[cpt]=new Action(x,y+1);}
+					int i = 0;
+					while (b==false && i<cpt){ //vérifie si au moins une case au contact et non hors plateau est occupée
+						if (!(estLibre(inPlateau[i].getX(),inPlateau[i].getY()))){
+							interet.add(new Action (x,y));
+							b=true;
+						}
+						i++;
+					}
+				}
+			}
+		}
+		return interet;
+	}
+
 	/**
 	 * Retourne une case libre au hasard
 	 *
