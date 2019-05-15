@@ -7,6 +7,8 @@ import java.util.Random;
 
 public class JIAabProfondeur extends JoueurIA {
 
+    private static final int MAX_DEPTH = 2;
+
     public JIAabProfondeur(String nom) {
         super(nom);
     }
@@ -47,12 +49,12 @@ public class JIAabProfondeur extends JoueurIA {
         return this.getActionMemorisee();
     }
 
-    private double heuristique(Etat n, Action tmp) {
-        int voisin = 0;
+    private double heuristique(Etat n, Action pointCosidere) {
+        double voisin = 0;
 
-        if(!loin(tmp)) {
-            int i = tmp.getX();
-            int j = tmp.getY();
+        if(!loin(pointCosidere)) {
+            int i = pointCosidere.getX();
+            int j = pointCosidere.getY();
             Symbole s = n.getPlateau().getCase(i, j);
             if (i != 0 && n.getPlateau().getCase(i - 1, j) == s) {
                 voisin++;
@@ -78,40 +80,10 @@ public class JIAabProfondeur extends JoueurIA {
             if (j != n.getPlateau().getTaille() - 1 && i != 0 && n.getPlateau().getCase(i - 1, j + 1) == s) {
                 voisin++;
             }
-
-            /*
-            for (int i = 0; i < n.getPlateau().getTaille(); i++) {
-                for (int j = 0; j < n.getPlateau().getTaille(); j++) {
-                    Symbole s = n.getPlateau().getCase(i, j);
-                    if (i != 0 && n.getPlateau().getCase(i - 1, j) == s) {
-                        LigPoss++;
-                    }
-                    if (i != 0 && n.getPlateau().getCase(i - 1, j - 1) == s && j != 0) {
-                        LigPoss++;
-                    }
-                    if (j != 0 && n.getPlateau().getCase(i, j - 1) == s) {
-                        LigPoss++;
-                    }
-                    if (j != 0 && n.getPlateau().getCase(i + 1, j - 1) == s && i != n.getPlateau().getTaille() - 1) {
-                        LigPoss++;
-                    }
-                    if (i != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j) == s) {
-                        LigPoss++;
-                    }
-                    if (i != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j + 1) == s && j != n.getPlateau().getTaille() - 1) {
-                        LigPoss++;
-                    }
-                    if (j != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i, j + 1) == s) {
-                        LigPoss++;
-                    }
-                    if (j != n.getPlateau().getTaille() - 1 && i != 0 && n.getPlateau().getCase(i - 1, j + 1) == s) {
-                        LigPoss++;
-                    }
-                }
-            }*/
         }
-        if(n.getIdJoueurCourant() != this.getID()) voisin = voisin *(-1);
-        System.out.println(voisin);
+        if(voisin != 0) System.out.println("Action " + pointCosidere + " possède " + voisin + " voisin !");
+        if(n.getIdJoueurCourant() == this.getID())   voisin = - voisin;// Si le joueur qui joue ce coup est un joueur min on renvoit un score négatif
+
         return voisin/8;
     }
 
@@ -127,53 +99,58 @@ public class JIAabProfondeur extends JoueurIA {
      */
     private double alphaBeta(Etat n, double alpha, double beta, int profondeur, Action tmp){
         //System.out.println("Utilisation de alphaBeta !");
-        if(profondeur>5) {
-            return heuristique(n, tmp);
-        } else {
-            Etat tmpState;
-            List<Action> listAction= n.actionsPossibles();
-            double tmpScore;
 
-            if(isTerminal(n)) {
-                return utilite(n);
-            }else {
-                if (n.getIdJoueurCourant() == this.getID()) { // Max is playing !
-                    //System.out.println("Max is playing");
-                    // Trying every action possible
-                    for (Action tmpAction : listAction) {
-                        if (alpha > beta) return alpha;
+        Etat tmpState;
+        List<Action> listAction= n.actionsPossibles();
+        double tmpScore;
 
-                        //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
-                        tmpState = n.clone();
-                        tmpState.jouer(tmpAction);
-                        tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
-                        //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
+        if(isTerminal(n)) {
+            return utilite(n);
+        }else {
+            if (n.getIdJoueurCourant() == this.getID()) { // Max is playing !
+                //System.out.println("Max is playing");
+                // Trying every action possible
+                for (Action tmpAction : listAction) {
+                    if (alpha > beta) return alpha;
+                    //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
+                    tmpState = n.clone();
+                    tmpState.jouer(tmpAction);
+                    tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
+                    //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
+                    if(profondeur>MAX_DEPTH) {
+                        tmpScore = heuristique(n, tmp);
+                    }else{
                         tmpScore = alphaBeta(tmpState, alpha, beta, profondeur+1, tmpAction);
-                        // Update alpha
-                        if (tmpScore > alpha) alpha = tmpScore;
-
-
                     }
-                    return alpha;
-                } else {  // Min is playing !
-                    //System.out.println("Min is playing");
-                    for (Action tmpAction : listAction) {
-                        if (alpha > beta) return beta;
-                        //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
-                        tmpState = n.clone();
-                        tmpState.jouer(tmpAction);
-                        tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
-                        //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
-                        tmpScore = alphaBeta(tmpState, alpha, beta, profondeur+1, tmpAction);
-                        // Update beta
-                        if (tmpScore < beta) beta = tmpScore;
+                    // Update alpha
+                    if (tmpScore > alpha) alpha = tmpScore;
 
 
-                    }
-                    return beta;
                 }
+                return alpha;
+            } else {  // Min is playing !
+                //System.out.println("Min is playing");
+                for (Action tmpAction : listAction) {
+                    if (alpha > beta) return beta;
+                    //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
+                    tmpState = n.clone();
+                    tmpState.jouer(tmpAction);
+                    tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
+                    //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
+                    if(profondeur>MAX_DEPTH) {
+                        tmpScore = heuristique(n, tmp);
+                    }else{
+                        tmpScore = alphaBeta(tmpState, alpha, beta, profondeur+1, tmpAction);
+                    }
+                    // Update beta
+                    if (tmpScore < beta) beta = tmpScore;
+
+
+                }
+                return beta;
             }
         }
+
     }
 
     /**
