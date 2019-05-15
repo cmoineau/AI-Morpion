@@ -81,7 +81,7 @@ public class JIAabProfondeur extends JoueurIA {
                 voisin++;
             }
         }
-        if(voisin != 0) System.out.println("Action " + pointCosidere + " possède " + voisin + " voisin !");
+        //if(voisin != 0) System.out.println("Action " + pointCosidere + " possède " + voisin + " voisin !");
         if(n.getIdJoueurCourant() == this.getID())   voisin = - voisin;// Si le joueur qui joue ce coup est un joueur min on renvoit un score négatif
 
         return voisin/8;
@@ -112,14 +112,15 @@ public class JIAabProfondeur extends JoueurIA {
                 // Trying every action possible
                 for (Action tmpAction : listAction) {
                     if (alpha > beta) return alpha;
+                    if(profondeur>MAX_DEPTH) {
+                        tmpScore = heuristique(n, tmp);
+                    }else{
                     //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
                     tmpState = n.clone();
                     tmpState.jouer(tmpAction);
                     tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
                     //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
-                    if(profondeur>MAX_DEPTH) {
-                        tmpScore = heuristique(n, tmp);
-                    }else{
+
                         tmpScore = alphaBeta(tmpState, alpha, beta, profondeur+1, tmpAction);
                     }
                     // Update alpha
@@ -133,19 +134,18 @@ public class JIAabProfondeur extends JoueurIA {
                 for (Action tmpAction : listAction) {
                     if (alpha > beta) return beta;
                     //System.out.println("Test de l'action x : " + tmpAction.getX() + " y  : " + tmpAction.getY());
+                    if(profondeur>MAX_DEPTH) {
+                        tmpScore = heuristique(n, tmp);
+                    }else{
                     tmpState = n.clone();
                     tmpState.jouer(tmpAction);
                     tmpState.setIdJoueurCourant(tmpState.getIdJoueurCourant() + 1); // we switch player manually
                     //System.out.println("Nouveau joueur : j" +tmpState.getIdJoueurCourant() );
-                    if(profondeur>MAX_DEPTH) {
-                        tmpScore = heuristique(n, tmp);
-                    }else{
+
                         tmpScore = alphaBeta(tmpState, alpha, beta, profondeur+1, tmpAction);
                     }
                     // Update beta
                     if (tmpScore < beta) beta = tmpScore;
-
-
                 }
                 return beta;
             }

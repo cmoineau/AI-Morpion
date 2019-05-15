@@ -1,9 +1,6 @@
 package Player;
 
-import Game.Action;
-import Game.Egalite;
-import Game.EnCours;
-import Game.Etat;
+import Game.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,8 +27,8 @@ public class JIAabLargeur extends JoueurIA {
      */
     @Override
     public Action choisirAction(Etat state) throws Exception {
-        int alpha = -1, beta = 1;
-        int tmpScore;
+        double alpha = -1, beta = 1;
+        double tmpScore;
         Etat tmpState;
         Node tmpNode;
 
@@ -47,7 +44,7 @@ public class JIAabLargeur extends JoueurIA {
 
         while (! open.isEmpty()){ // Condition peut être un peu forte ... A changer pour tant qu'on detecte pas un coup gagnant ?
             tmpNode = open.remove();
-            tmpScore = evalEtat(tmpNode.getEtat());
+            tmpScore = evalEtat(tmpNode);
             if(tmpNode.getEtat().getIdJoueurCourant() == this.getID() && tmpScore>alpha) {
                 alpha=tmpScore;
                 System.out.println("On mémorise une nouvelle meilleur action : " + tmpNode.getEtat().getPlateau() );
@@ -67,14 +64,14 @@ public class JIAabLargeur extends JoueurIA {
     }
 
     /**
-     * @param n A state of the game
+     * @param node A state of the game + the action that lead to this state
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
-    private int evalEtat(Etat n){
-        if(isTerminal(n)) {
-            return utilite(n);
+    private double evalEtat(Node node){
+        if(isTerminal(node.getEtat())) {
+            return utilite(node.getEtat());
         }else{
-            return heuristique(n);
+            return heuristique(node.getEtat(), node.getAction());
         }
     }
 
@@ -93,7 +90,7 @@ public class JIAabLargeur extends JoueurIA {
      * @param n Sate
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
-    private int utilite (Etat n){
+    private double utilite (Etat n){
         if  (n.situationCourante() instanceof Egalite){
             System.out.println("Detection d'une égalité !");
             return 0;
@@ -113,8 +110,47 @@ public class JIAabLargeur extends JoueurIA {
      * @param n Sate
      * @return the score : 1 is a win for you, -1 for your opponent  and 0 for a draw
      */
-    private int heuristique (Etat n){
-            return 0;
+    private double heuristique(Etat n, Action pointCosidere) {
+        double voisin = 0;
+
+        if(!loin(pointCosidere)) {
+            int i = pointCosidere.getX();
+            int j = pointCosidere.getY();
+            Symbole s = n.getPlateau().getCase(i, j);
+            if (i != 0 && n.getPlateau().getCase(i - 1, j) == s) {
+                voisin++;
+            }
+            if (i != 0 && j != 0 && n.getPlateau().getCase(i - 1, j - 1) == s) {
+                voisin++;
+            }
+            if (j != 0 && n.getPlateau().getCase(i, j - 1) == s) {
+                voisin++;
+            }
+            if (j != 0 && i != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j - 1) == s) {
+                voisin++;
+            }
+            if (i != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j) == s) {
+                voisin++;
+            }
+            if (i != n.getPlateau().getTaille() - 1 && j != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i + 1, j + 1) == s) {
+                voisin++;
+            }
+            if (j != n.getPlateau().getTaille() - 1 && n.getPlateau().getCase(i, j + 1) == s) {
+                voisin++;
+            }
+            if (j != n.getPlateau().getTaille() - 1 && i != 0 && n.getPlateau().getCase(i - 1, j + 1) == s) {
+                voisin++;
+            }
+        }
+        if(voisin != 0) System.out.println("Action " + pointCosidere + " possède " + voisin + " voisin !");
+        if(n.getIdJoueurCourant() == this.getID())   voisin = - voisin;// Si le joueur qui joue ce coup est un joueur min on renvoit un score négatif
+
+        return voisin/8;
+    }
+
+    private boolean loin(Action tmp) {
+
+        return false;
     }
 
     private void enregistrerActionFils (Node node){
