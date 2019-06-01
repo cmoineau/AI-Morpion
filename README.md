@@ -10,7 +10,7 @@ Cependant l'algorithme perdait beaucoups en efficacité sur un plateau de taille
 ## Améliorations :
 
 Pour pallier au problème décris dans le paragraphe précédent, nous avons mis en place une heuristique basique qui récompense l'IA si elle joue des coups proche de ces pions et va nous empêcher de mettre nos pions trop proche les uns des autres.
-Pour mettre en place l'heuristique, nous avons décidé d'utiliser une recherche par **profondeur itérative**. En effet, dans notre jeu l'IA se fait couper au bout d'un certain temps il nous faut la certitude qu'elle ait pu réaliser des calculs pertinants.
+Pour mettre en place l'heuristique, nous avons décidé d'utiliser une recherche par **profondeur itérative**. En effet, dans notre jeu l'IA se fait couper au bout d'un certain temps il nous faut la certitude qu'elle ait pu réaliser des calculs pertinents.
 
 ## Conclusion : 
 
